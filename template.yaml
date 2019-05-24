@@ -1,0 +1,124 @@
+---
+Description: 'Alces Appliance Template'
+Mappings:
+  RegionMap:
+    eu-west-1:
+      "AMI": "ami-0c81dfbdd0069fff4"
+
+Parameters:
+  AccessKeyName:
+    Description: 'AWS key for access to the centos user account'
+    Type: 'AWS::EC2::KeyPair::KeyName'
+
+Resources:
+  applianceNetwork:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.10.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  applianceSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.10.0.0/16
+      VpcId: !Ref 'applianceNetwork'
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref 'AWS::Region'
+
+  applianceInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    DependsOn: applianceNetwork
+
+  applianceInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref applianceInternetGateway
+      VpcId: !Ref applianceNetwork
+
+  applianceRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn: applianceInternetGatewayAttachment
+    Properties:
+      VpcId: !Ref applianceNetwork
+
+  applianceSubnetRouteTableAssocation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref applianceSubnet
+      RouteTableId: !Ref applianceRouteTable
+
+  applianceRouteInternetGateway:
+    Type: AWS::EC2::Route
+    DependsOn: applianceInternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref applianceRouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref applianceInternetGateway
+
+  applianceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: applianceExternal
+      GroupDescription: 'External Security Group for Appliance'
+      VpcId: !Ref applianceNetwork
+      SecurityGroupIngress:
+        -
+          IpProtocol: 'tcp'
+          FromPort: 22
+          ToPort: 22
+          CidrIp: '0.0.0.0/0'
+          Description: 'Allow inbound SSH access'
+        -
+          IpProtocol: 'icmp'
+          FromPort: '8'
+          ToPort: '-1'
+          CidrIp: '0.0.0.0/0'
+          Description: 'Allow ping'
+      SecurityGroupEgress:
+        -
+          IpProtocol: '-1'
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: '0.0.0.0/0'
+          Description: 'Allow outbound internet access'
+
+  applianceInterface:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SourceDestCheck: false
+      GroupSet:
+        - !Ref applianceSecurityGroup
+      SubnetId: !Ref applianceSubnet
+
+  appliance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      ImageId: !FindInMap ["RegionMap", !Ref "AWS::Region", "AMI"]
+      InstanceType: t2.small
+      Monitoring: true
+      KeyName: !Ref AccessKeyName
+      NetworkInterfaces:
+        -
+          NetworkInterfaceId: !Ref applianceInterface
+          DeviceIndex: 0
+
+  appliancepublicIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  appliancepublicIpAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      NetworkInterfaceId: !Ref applianceInterface
+      AllocationId: !GetAtt appliancepublicIp.AllocationId
+
+Outputs:
+  PublicIP:
+    Description: Appliance Public IP
+    Value: !Ref appliancepublicIp
