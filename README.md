@@ -5,7 +5,7 @@
 The OpenFlight hub is available as an image. Creating an instance of this image will provide a fully working hub with the tools, local tool mirror repo and prompt. 
 
 Image available at:
-- AWS: OpenFlight Hub v1.2 AMI
+- AWS: openflight-hub-20190523152135
 
 ## Build Process
 
