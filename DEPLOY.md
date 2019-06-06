@@ -115,7 +115,7 @@
     flight cloud aws deploy gateway1 node/gateway1 -p "securitygroup,network1SubnetID=*mycluster-domain"
     ```
 
-- Copy the SSH key to the gateway (GATEWAY-IP can be found via `flight cloud aws list deployments`)
+- Copy the SSH key to the gateway (GATEWAY-IP can be found via `flight cloud aws list machines`)
 
     ```
     scp /root/.ssh/id_rsa root@GATEWAY-IP:/root/.ssh/
@@ -141,7 +141,7 @@
     flight cloud azure deploy gateway1 node/gateway1 -p "securitygroup,network1SubnetID=*mycluster-domain"
     ```
 
-- Copy the SSH key to the gateway (GATEWAY-IP can be found via `flight cloud azure list deployments`)
+- Copy the SSH key to the gateway (GATEWAY-IP can be found via `flight cloud azure list machines`)
 
     ```
     scp /root/.ssh/id_rsa root@GATEWAY-IP:/root/.ssh/
