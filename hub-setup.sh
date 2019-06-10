@@ -101,7 +101,7 @@ systemctl start httpd
 bash /opt/repo/updateclient.sh
 yum clean all
 
-yum install -y flight-architect flight-cloud flight-manage flight-inventory
+yum install -y flight-architect flight-cloud flight-manage flight-metal flight-inventory
 
 _yes=true /opt/flight/bin/flenable
 
@@ -147,7 +147,7 @@ curl https://raw.githubusercontent.com/openflighthpc/openflight-hub/master/hub-c
 #
 
 # Remove unnecessary platforms
-rm -rf /opt/flight/opt/architect/data/base/lib/templates/{kickstart,libvirt,vbox} /opt/flight/opt/architect/data/base/etc/configs/platforms/{kickstart,libvirt,vbox}.yaml
+rm -rf /opt/flight/opt/architect/data/base/lib/templates/{libvirt,vbox} /opt/flight/opt/architect/data/base/etc/configs/platforms/{libvirt,vbox}.yaml
 
 # Remove some subcommands
 ## Plugins
