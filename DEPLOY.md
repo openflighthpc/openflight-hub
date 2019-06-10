@@ -4,6 +4,43 @@
 
 ### AWS AMI
 
+Available AMIs
+```
+RegionMap:
+  eu-west-2:
+    "AMI": "ami-0b42d3320b1ef09d0"
+  eu-north-1:
+    "AMI": "ami-0f480077ddfd0319c"
+  ap-south-1:
+    "AMI": "ami-0ad43b043436f5765"
+  eu-west-3:
+    "AMI": "ami-00800d4621737a206"
+  eu-west-1:
+    "AMI": "ami-019abb4b5d8b012e6"
+  ap-northeast-2:
+    "AMI": "ami-04a6d17368f3e9704"
+  ap-northeast-1:
+    "AMI": "ami-0790ab211aeaf2d3e"
+  sa-east-1:
+    "AMI": "ami-04c9ef9bef737f553"
+  ca-central-1:
+    "AMI": "ami-095d47bedcd788f2e"
+  ap-southeast-1:
+    "AMI": "ami-0286be737dd2e6da3"
+  ap-southeast-2:
+    "AMI": "ami-076b0fb4d329d52eb"
+  eu-central-1:
+    "AMI": "ami-0cf9e044dc0ccf459"
+  us-east-1:
+    "AMI": "ami-0ea099bb5ec6997c6"
+  us-east-2:
+    "AMI": "ami-092bcce6eb6286084"
+  us-west-1:
+    "AMI": "ami-0aeed8cbf94d7304c"
+  us-west-2:
+    "AMI": "ami-0abaf7574d2bd35a2"
+```
+
 - Launch OpenFlight AMI
 
     ![Launch AMI](pictures/ami-01.png)

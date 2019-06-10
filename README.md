@@ -4,9 +4,6 @@
 
 The OpenFlight hub is available as an image. Creating an instance of this image will provide a fully working hub with the tools, local tool mirror repo and prompt. 
 
-Image available at:
-- AWS: openflight-hub-20190523152135
-
 ## Build Process
 
 The base machine creation is outside the scope of this doc/repo. A base CentOS image that matches the requirements in the Specification section will need to be created.
