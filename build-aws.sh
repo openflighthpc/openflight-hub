@@ -27,7 +27,7 @@
 #==============================================================================
 
 # Variables
-SOURCE_AMI=ami-0ff760d16d9497662 # CentOS 7 with Updates HVM (CentOS Linux 7 x86_64 HVM EBS ENA 1901_01-b7ee8a69-ee97-4a49-9e68-afaee216db2e-ami-05713873c6794f575.4)
+SOURCE_AMI=ami-0019f18ee3d4157d3 # Clean CentOS 7 build image in Alces account, hosted in eu-west-1
 REGION=eu-west-1
 IMAGE_NAME="openflight-hub-$(date +%Y%m%d%H%M%S)"
 KEY_PATH="/root/.ssh/aws_ireland.pem"
