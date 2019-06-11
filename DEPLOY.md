@@ -8,37 +8,37 @@ Available AMIs
 ```
 RegionMap:
   eu-west-2:
-    "AMI": "ami-0b42d3320b1ef09d0"
+    "AMI": "ami-05643cc2a1cdd43c0"
   eu-north-1:
-    "AMI": "ami-0f480077ddfd0319c"
+    "AMI": "ami-0cea4271128756572"
   ap-south-1:
-    "AMI": "ami-0ad43b043436f5765"
+    "AMI": "ami-0df6f0a44e0ff8bd0"
   eu-west-3:
-    "AMI": "ami-00800d4621737a206"
+    "AMI": "ami-09131c03adc180926"
   eu-west-1:
-    "AMI": "ami-019abb4b5d8b012e6"
+    "AMI": "ami-07641bd3bbc0b6d18"
   ap-northeast-2:
-    "AMI": "ami-04a6d17368f3e9704"
+    "AMI": "ami-0866bde9a302b60af"
   ap-northeast-1:
-    "AMI": "ami-0790ab211aeaf2d3e"
+    "AMI": "ami-050097901f2845e6f"
   sa-east-1:
-    "AMI": "ami-04c9ef9bef737f553"
+    "AMI": "ami-01d1c49a1988bb40c"
   ca-central-1:
-    "AMI": "ami-095d47bedcd788f2e"
+    "AMI": "ami-01231995b2bc24bcf"
   ap-southeast-1:
-    "AMI": "ami-0286be737dd2e6da3"
+    "AMI": "ami-0379400334aef6a3a"
   ap-southeast-2:
-    "AMI": "ami-076b0fb4d329d52eb"
+    "AMI": "ami-07af90628c7d0154b"
   eu-central-1:
-    "AMI": "ami-0cf9e044dc0ccf459"
+    "AMI": "ami-0c305bf1107d4e3b8"
   us-east-1:
-    "AMI": "ami-0ea099bb5ec6997c6"
+    "AMI": "ami-0261b6cb3767d87f7"
   us-east-2:
-    "AMI": "ami-092bcce6eb6286084"
+    "AMI": "ami-0b40588f014210c59"
   us-west-1:
-    "AMI": "ami-0aeed8cbf94d7304c"
+    "AMI": "ami-015893737acbf783a"
   us-west-2:
-    "AMI": "ami-0abaf7574d2bd35a2"
+    "AMI": "ami-05782ce9b7d1d6642"
 ```
 
 - Launch OpenFlight AMI
