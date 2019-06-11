@@ -97,15 +97,15 @@ while [[ $AWS != 'y' && $AZURE != 'y' ]] ; do
     fi
 
     # Azure
-    ask_question_yn "Configure Azure Access Credentials" AZURE
+    #ask_question_yn "Configure Azure Access Credentials" AZURE
 
-    if [[ $AZURE =~ ^[Yy]$ ]] ; then
-        ask_question "Azure Default Region" AZURE_REGION
-        ask_question "Azure Tenant ID" AZURE_TENANT_ID
-        ask_question "Subscription ID" AZURE_SUBSCRIPTION_ID
-        ask_question "Client Secret" AZURE_CLIENT_SECRET
-        ask_question "Client ID" AZURE_CLIENT_ID
-    fi
+    #if [[ $AZURE =~ ^[Yy]$ ]] ; then
+    #    ask_question "Azure Default Region" AZURE_REGION
+    #    ask_question "Azure Tenant ID" AZURE_TENANT_ID
+    #    ask_question "Subscription ID" AZURE_SUBSCRIPTION_ID
+    #    ask_question "Client Secret" AZURE_CLIENT_SECRET
+    #    ask_question "Client ID" AZURE_CLIENT_ID
+    #fi
 done
 
 echo
@@ -116,12 +116,12 @@ cat << EOF > /opt/flight/opt/cloud/etc/config.yaml
 prefix_tag:
 
 # Provider credentials
-azure:
-  default_region: $AZURE_REGION
-  tenant_id: $AZURE_TENANT_ID
-  subscription_id: $AZURE_SUBSCRIPTION_ID
-  client_secret: $AZURE_CLIENT_SECRET
-  client_id: $AZURE_CLIENT_ID
+#azure:
+#  default_region: $AZURE_REGION
+#  tenant_id: $AZURE_TENANT_ID
+#  subscription_id: $AZURE_SUBSCRIPTION_ID
+#  client_secret: $AZURE_CLIENT_SECRET
+#  client_id: $AZURE_CLIENT_ID
 
 aws:
   default_region: $AWS_REGION
