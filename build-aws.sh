@@ -54,6 +54,11 @@ echo "Setup Complete (output at /tmp/$IMAGE_NAME)"
 echo "Creating image..."
 AMI_ID=$(aws ec2 create-image --region $REGION --instance-id $INSTANCE_ID --name $IMAGE_NAME --output text)
 aws ec2 wait image-available --image-ids $AMI_ID
+
+# Make image public
+echo "Publicising image..."
+aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "Add=[{Group=all}]"
+
 echo "Tidying up..."
 aws ec2 terminate-instances --region $REGION --instance-id $INSTANCE_ID 
 echo "Done."
