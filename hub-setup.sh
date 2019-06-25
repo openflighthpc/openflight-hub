@@ -9,7 +9,7 @@ sed -i 's/^SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 setenforce 0
 
 # Packages
-yum install -y vim git epel-release
+yum install -y vim git epel-release wget
 yum install -y s3cmd awscli
 
 #
@@ -58,6 +58,8 @@ EOD
 cat << EOD > /opt/repo/updateclient.sh
 curl http://$IP/repo/client.repo > /etc/yum.repos.d/client.repo
 EOD
+
+bash /opt/repo/updateclient.sh
 EOF
 
 bash /opt/repo/updateserver.sh
