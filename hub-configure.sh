@@ -166,6 +166,12 @@ EXPORT=$(flight architect export |sed 's/.*: //g')
 flight cloud aws import $EXPORT > /dev/null
 flight cloud azure import $EXPORT > /dev/null
 
+#
+# METAL
+#
+cp /var/lib/underware/clusters/$CLUSTER/var/rendered/kickstart/domain/platform/manifest.yaml /var/lib/underware/clusters/$CLUSTER/var/rendered/
+flight metal import /var/lib/underware/clusters/$CLUSTER/var/rendered/manifest.yaml
+
 # 
 # COMPLETION MESSAGES
 #
