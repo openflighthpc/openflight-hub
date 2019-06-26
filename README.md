@@ -36,13 +36,10 @@ The base appliance script does the following:
 * Installs Flight Architect
 * Installs Flight Cloud
 * Installs Flight Inventory
+* Installs Flight Metal
 * Setup prompt
 
 ### Tool Versions
 
-Alces Appliance 1.0 uses the following tool versions:
-- Overware 1.2
-- Flight Architect 1.0
-- Flight Cloud 1.1
-- Flight Inventory 1.2
+The Alces Appliance uses the latest versions of tools from the [OpenFlight production repo](https://github.com/openflighthpc/flight-runway#from-the-openflight-yum-repository).
 
