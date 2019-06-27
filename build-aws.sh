@@ -39,7 +39,7 @@ INSTANCE_ID=$(aws ec2 run-instances --image-id $SOURCE_AMI --count 1 --instance-
 # Wait for image to boot
 aws ec2 wait --region $REGION instance-running --instance-ids $INSTANCE_ID
 
-IP=$(aws ec2 describe-instances --region eu-west-1 --instance-ids $INSTANCE_ID --output text |grep INSTANCES |awk '{print $15}')
+IP=$(aws ec2 describe-instances --region $REGION --instance-ids $INSTANCE_ID --output text |grep INSTANCES |awk '{print $15}')
 while ! ssh -i $KEY_PATH -o "StrictHostKeyChecking no" centos@$IP echo -n 2> /dev/null ; do
     echo "Waiting for SSH..."
     sleep 15
@@ -53,12 +53,35 @@ echo "Setup Complete (output at /tmp/$IMAGE_NAME)"
 # Create image
 echo "Creating image..."
 AMI_ID=$(aws ec2 create-image --region $REGION --instance-id $INSTANCE_ID --name $IMAGE_NAME --output text)
-aws ec2 wait image-available --image-ids $AMI_ID
+aws ec2 wait image-available --region $REGION --image-ids $AMI_ID
 
 # Make image public
 echo "Publicising image..."
-aws ec2 modify-image-attribute --image-id $AMI_ID --launch-permission "Add=[{Group=all}]"
+aws ec2 modify-image-attribute --region $REGION --image-id $AMI_ID --launch-permission "Add=[{Group=all}]"
 
 echo "Tidying up..."
 aws ec2 terminate-instances --region $REGION --instance-id $INSTANCE_ID 
 echo "Done."
+
+cat << EOF
+
+To distribute this image around all regions will require something like:
+
+  IMAGE_NAME=$IMAGE_NAME
+  REGION=$REGION
+  AMI=$AMI_ID
+  AWS_REGIONS=\$(aws ec2 describe-regions |grep RegionName |awk '{print \$2}' |grep -v \$REGION |sed 's/"//g')
+
+  # Copy to all regions
+  for region in \$AWS_REGIONS ; do
+    echo "Copying \$AMI to \$region"
+    aws ec2 copy-image --source-region \$REGION --source-image-id \$AMI --region \$region --name \$IMAGE_NAME --description \$IMAGE_NAME
+  done
+
+  # Ensure images are public (once copies have complete)
+  for region in \$AWS_REGIONS ; do
+    ami=\$(aws ec2 describe-images --filters Name=name,Values=\$IMAGE_NAME --region \$region |grep ImageId |awk '{print \$2}' |sed 's/"//g;s/,//g')
+    aws ec2 modify-image-attribute --image-id \$ami --region \$region --launch-permission "Add=[{Group=all}]"
+  done
+
+EOF
