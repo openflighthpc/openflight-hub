@@ -75,59 +75,13 @@ sed -i "s,renderedurl:.*,renderedurl: http://$IP/architect/<%=node.config.cluste
 # Get access details
 cat << EOF
 
-Deploying cloud resources requires at least one of either AWS or Azure credentials. 
+Deploying cloud resources requires AWS access credentials. 
 
-For information on locating your cloud credentials, see:
-
-    https://github.com/openflighthpc/flight-cloud#configuring-cloud-authentication
 EOF
-
-
-while [[ $AWS != 'y' && $AZURE != 'y' ]] ; do
-    echo
-    echo "At least one cloud provider must be configured"
-    echo 
-    # AWS
-    ask_question_yn "Configure AWS Access Credentials" AWS
-
-    if [[ $AWS =~ ^[Yy]$ ]] ; then
-        ask_question "AWS Default Region" AWS_REGION
-        ask_question "AWS Access Key ID" AWS_ACCESS_KEY_ID
-        ask_question "AWS Secret Access Key" AWS_SECRET_ACCESS_KEY
-    fi
-
-    # Azure
-    #ask_question_yn "Configure Azure Access Credentials" AZURE
-
-    #if [[ $AZURE =~ ^[Yy]$ ]] ; then
-    #    ask_question "Azure Default Region" AZURE_REGION
-    #    ask_question "Azure Tenant ID" AZURE_TENANT_ID
-    #    ask_question "Subscription ID" AZURE_SUBSCRIPTION_ID
-    #    ask_question "Client Secret" AZURE_CLIENT_SECRET
-    #    ask_question "Client ID" AZURE_CLIENT_ID
-    #fi
-done
+flight cloud aws configure
 
 echo
 echo
-
-# Configure config.yaml
-cat << EOF > /opt/flight/opt/cloud/etc/config.yaml
-prefix_tag:
-
-# Provider credentials
-#azure:
-#  default_region: $AZURE_REGION
-#  tenant_id: $AZURE_TENANT_ID
-#  subscription_id: $AZURE_SUBSCRIPTION_ID
-#  client_secret: $AZURE_CLIENT_SECRET
-#  client_id: $AZURE_CLIENT_ID
-
-aws:
-  default_region: $AWS_REGION
-  access_key_id: $AWS_ACCESS_KEY_ID
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
-EOF
 
 ##########################
 #                        #
@@ -172,18 +126,6 @@ flight cloud azure import $EXPORT > /dev/null
 cp /var/lib/underware/clusters/$CLUSTER/var/rendered/kickstart/domain/platform/manifest.yaml /var/lib/underware/clusters/$CLUSTER/var/rendered/
 flight metal import /var/lib/underware/clusters/$CLUSTER/var/rendered/manifest.yaml >> /dev/null
 
-# 
-# COMPLETION MESSAGES
-#
-
-if [[ $AWS == 'y' && $AZURE == 'y' ]] ; then
-    PROMPT="[aws/azure]"
-elif [[ $AWS == 'y' ]] ; then
-    PROMPT="aws"
-elif [[ $AZURE == 'y' ]] ; then
-    PROMPT="azure"
-fi
-
 cat << EOF
 
 OpenFlight Hub Configuration Complete!
@@ -192,11 +134,11 @@ To deploy your cluster:
 
 1. Deploy the domain
 
-    flight cloud $PROMPT deploy $CLUSTER-domain domain
+    flight cloud aws deploy $CLUSTER-domain domain
 
 2. Deploy the gateway
 
-    flight cloud $PROMPT deploy gateway1 node/gateway1 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
+    flight cloud aws deploy gateway1 node/gateway1 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
 
 3. Copy the SSH key to the gateway
 
@@ -204,7 +146,7 @@ To deploy your cluster:
 
 4. Deploy the nodes (example given: node01)
 
-    flight cloud $PROMPT deploy node01 node/node01 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
+    flight cloud aws deploy node01 node/node01 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
 
 EOF
 
