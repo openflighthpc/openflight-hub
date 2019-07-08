@@ -37,7 +37,7 @@ PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCK8fxlYAcZHfZ9Rhcl0IIcFAleztyM
 echo "Launching Instance..."
 
 az group create --name $IMAGE_NAME --location $REGION
-INSTANCE_OUT=$(az vm create --location $REGION --resource-group $IMAGE_NAME --name $IMAGE_NAME --image $SOURCE_IMAGE --admin-username centos --ssh-key-value "$PUBLIC_KEY" -o yaml)
+INSTANCE_OUT=$(az vm create --location $REGION --resource-group $IMAGE_NAME --name $IMAGE_NAME --image $SOURCE_IMAGE --admin-username centos --ssh-key-value "$PUBLIC_KEY" -o yaml --tags delete_after=True)
 INSTANCE_ID=$(echo "$INSTANCE_OUT" |grep 'id:' |sed 's/.*id: //g')
 IP=$(echo "$INSTANCE_OUT" |grep 'publicIpAddress:' |sed 's/.*publicIpAddress: //g')
 
@@ -53,12 +53,14 @@ echo "Setup Complete (output at /tmp/$IMAGE_NAME)"
 
 # Create image
 echo "Creating image..."
-az image create --resource-group $RESOURCE_GROUP \
+az vm stop --location $REGION --resource-group $IMAGE_NAME --name $IMAGE_NAME
+az vm generalize --location $REGION --resource-group $IMAGE_NAME --name $IMAGE_NAME
+az image create --resource-group $IMAGE_NAME \
         --name $IMAGE_NAME \
         --location $REGION \
         --os-type Linux \
         --source $INSTANCE_ID
 
 echo "Tidying up..."
-
+az resource delete --location $REGION --ids $(az resource list --location $REGION --tag delete_after=True -otable --query "[].id" -otsv)
 echo "Done."
