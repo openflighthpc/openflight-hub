@@ -53,8 +53,8 @@ echo "Setup Complete (output at /tmp/$IMAGE_NAME)"
 
 # Create image
 echo "Creating image..."
-az vm stop --location $REGION --resource-group $IMAGE_NAME --name $IMAGE_NAME
-az vm generalize --location $REGION --resource-group $IMAGE_NAME --name $IMAGE_NAME
+az vm stop --resource-group $IMAGE_NAME --name $IMAGE_NAME
+az vm generalize --resource-group $IMAGE_NAME --name $IMAGE_NAME
 az image create --resource-group $IMAGE_NAME \
         --name $IMAGE_NAME \
         --location $REGION \
@@ -62,5 +62,22 @@ az image create --resource-group $IMAGE_NAME \
         --source $INSTANCE_ID
 
 echo "Tidying up..."
-az resource delete --location $REGION --ids $(az resource list --location $REGION --tag delete_after=True -otable --query "[].id" -otsv)
+az resource delete --ids $(az resource list --tag delete_after=True -otable --query "[].id" -otsv)
 echo "Done."
+
+cat << EOF 
+
+To distribute this image around all regions will require something like:
+
+  IMAGE_NAME=$IMAGE_NAME
+  REGION=$REGION
+  AMI=$AMI_ID
+  AZURE_REGIONS=\$(az provider show --namespace Microsoft.Storage --query "resourceTypes[?resourceType=='storageAccounts'].locations | [0]" -o tsv |sed 's/ //g' | tr '[:upper:]' '[:lower:]' |grep -v \$REGION |sort)
+
+  # Add extension to allow for image copying
+  az extension add --name image-copy-extension
+
+  # Copy to all regions
+  az image copy --source-resource-group \$IMAGE_NAME --source-object-name \$IMAGE_NAME --target-location \$(for region in \$AZURE_REGIONS ; do echo -n "\$region " ; done) --target-resource-group \$IMAGE_NAME --cleanup
+
+EOF
