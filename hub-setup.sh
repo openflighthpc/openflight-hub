@@ -42,7 +42,10 @@ createrepo /opt/repo/openflight
 
 # Server Updater Script
 cat << 'EOF' > /opt/repo/updateserver.sh
-IP="$(curl http://169.254.169.254/latest/meta-data/public-ipv4)"
+IP="$(curl -f http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)"
+if [ $? != 0 ] ; then
+    IP="$(curl -f -H Metadata:true 'http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2019-06-01&format=text')"
+fi
 
 # Client repo file
 cat << EOD > /opt/repo/client.repo

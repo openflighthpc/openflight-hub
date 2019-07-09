@@ -27,6 +27,12 @@ function ask_question() {
         read -p "$QUESTION: " VAR
     done
 
+    # Alphanumeric only
+    while [[ "$VAR" =~ [^a-zA-Z0-9] ]] ; do
+        echo "ERROR: Answer can only contain letters and numbers"
+        read -p "$QUESTION: " VAR
+    done
+
     declare -g $OUTPUT=$VAR
 }
 
@@ -64,7 +70,10 @@ function ask_question_yn() {
 #
 
 # Update domain config
-IP="$(curl http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)"
+IP="$(curl -f http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)"
+if [ $? != 0 ] ; then
+    IP="$(curl -f -H Metadata:true 'http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2019-06-01&format=text')"
+fi
 sed -i "s,renderedurl:.*,renderedurl: http://$IP/architect/<%=node.config.cluster%>/var/rendered/<%=node.platform%>/node/<%=node.name%>,g" /opt/flight/opt/architect/data/base/etc/configs/domain.yaml
 
 
