@@ -41,6 +41,9 @@ INSTANCE_OUT=$(az vm create --location $REGION --resource-group $IMAGE_NAME --na
 INSTANCE_ID=$(echo "$INSTANCE_OUT" |grep 'id:' |sed 's/.*id: //g')
 IP=$(echo "$INSTANCE_OUT" |grep 'publicIpAddress:' |sed 's/.*publicIpAddress: //g')
 
+# Allow HTTP curl from VM
+az vm open-port -g $IMAGE_NAME -n $IMAGE_NAME --port 80 --priority 100 >> /dev/null
+
 while ! ssh -i $KEY_PATH -o "StrictHostKeyChecking no" centos@$IP echo -n 2> /dev/null ; do
     echo "Waiting for SSH..."
     sleep 15
