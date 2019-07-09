@@ -71,7 +71,6 @@ To distribute this image around all regions will require something like:
 
   IMAGE_NAME=$IMAGE_NAME
   REGION=$REGION
-  AMI=$AMI_ID
   AZURE_REGIONS=\$(az provider show --namespace Microsoft.Storage --query "resourceTypes[?resourceType=='storageAccounts'].locations | [0]" -o tsv |sed 's/ //g' | tr '[:upper:]' '[:lower:]' |grep -v \$REGION |sort)
 
   # Add extension to allow for image copying
