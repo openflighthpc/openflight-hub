@@ -13,6 +13,15 @@ function stuff_that_should_be_quiet() {
 
 stuff_that_should_be_quiet > /dev/null
 
+function ctrl_c() {
+    echo "Exiting program..."
+    sleep 1
+    echo "Re-execute this script to continue with cluster setup:"
+    echo "    bash hub-configure.sh"
+    exit 1
+}
+
+trap 'ctrl_c' SIGINT
 
 function ask_question() {
     #
@@ -84,10 +93,30 @@ sed -i "s,renderedurl:.*,renderedurl: http://$IP/architect/<%=node.config.cluste
 # Get access details
 cat << EOF
 
-Deploying cloud resources requires AWS access credentials. 
+Deploying cloud resources requires either AWS or Azure access credentials. 
+
+For information on locating your cloud credentials, see:
+
+    https://github.com/openflighthpc/flight-cloud#configuring-cloud-authentication
 
 EOF
-flight cloud aws configure
+
+while [[ $AWS != 'y' && $AZURE != 'y' ]] ; do
+
+    # AWS
+    ask_question_yn "Configure AWS Access Credentials" AWS
+
+    if [[ $AWS =~ ^[Yy]$ ]] ; then
+        flight cloud aws configure
+    fi
+
+    # Azure
+    ask_question_yn "Configure Azure Access Credentials" AZURE
+
+    if [[ $AZURE =~ ^[Yy]$ ]] ; then
+        flight cloud azure configure
+    fi
+done
 
 echo
 echo
@@ -135,6 +164,15 @@ flight cloud azure import $EXPORT > /dev/null
 cp /var/lib/underware/clusters/$CLUSTER/var/rendered/kickstart/domain/platform/manifest.yaml /var/lib/underware/clusters/$CLUSTER/var/rendered/
 flight metal import /var/lib/underware/clusters/$CLUSTER/var/rendered/manifest.yaml >> /dev/null
 
+
+if [[ $AWS == 'y' && $AZURE == 'y' ]] ; then
+    PROMPT="[aws/azure]"
+elif [[ $AWS == 'y' ]] ; then
+    PROMPT="aws"
+elif [[ $AZURE == 'y' ]] ; then
+    PROMPT="azure"
+fi
+
 cat << EOF
 
 OpenFlight Hub Configuration Complete!
@@ -143,11 +181,11 @@ To deploy your cluster:
 
 1. Deploy the domain
 
-    flight cloud aws deploy $CLUSTER-domain domain
+    flight cloud $PROMPT deploy $CLUSTER-domain domain
 
 2. Deploy the gateway
 
-    flight cloud aws deploy gateway1 node/gateway1 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
+    flight cloud $PROMPT deploy gateway1 node/gateway1 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
 
 3. Copy the SSH key to the gateway
 
@@ -155,7 +193,7 @@ To deploy your cluster:
 
 4. Deploy the nodes (example given: node01)
 
-    flight cloud aws deploy node01 node/node01 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
+    flight cloud $PROMPT deploy node01 node/node01 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
 
 EOF
 
