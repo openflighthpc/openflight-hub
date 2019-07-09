@@ -11,13 +11,41 @@ setenforce 0
 # Packages
 yum install -y vim git epel-release wget
 yum install -y s3cmd awscli
+yum install -y httpd yum-plugin-priorities yum-utils createrepo
+
+#
+# HTTP Setup
+#
+
+# Repo
+cat << EOF > /etc/httpd/conf.d/repo.conf
+<Directory /opt/repo/>
+    Options Indexes MultiViews FollowSymlinks
+    AllowOverride None
+    Require all granted
+    Order Allow,Deny
+    Allow from all
+</Directory>
+Alias /repo /opt/repo
+EOF
+
+# Rendered content
+cat << EOF > /etc/httpd/conf.d/architect.conf
+<Directory /var/lib/underware/clusters/>
+    Options Indexes MultiViews FollowSymlinks
+    AllowOverride None
+    Require all granted
+    Order Allow,Deny
+    Allow from all
+</Directory>
+Alias /architect /var/lib/underware/clusters/
+EOF
+systemctl enable httpd
+systemctl start httpd
 
 #
 # Repo
 #
-
-# Create Repo
-yum install -y httpd yum-plugin-priorities yum-utils createrepo
 
 mkdir -p /opt/repo/openflight
 
@@ -69,36 +97,6 @@ bash /opt/repo/updateserver.sh
 
 # Add updater to crontab
 (crontab -l ; echo '@reboot  bash /opt/repo/updateserver.sh') |crontab -
-
-#
-# HTTP Setup
-#
-
-# Repo
-cat << EOF > /etc/httpd/conf.d/repo.conf
-<Directory /opt/repo/>
-    Options Indexes MultiViews FollowSymlinks
-    AllowOverride None
-    Require all granted
-    Order Allow,Deny
-    Allow from all
-</Directory>
-Alias /repo /opt/repo
-EOF
-
-# Rendered content
-cat << EOF > /etc/httpd/conf.d/architect.conf
-<Directory /var/lib/underware/clusters/>
-    Options Indexes MultiViews FollowSymlinks
-    AllowOverride None
-    Require all granted
-    Order Allow,Deny
-    Allow from all
-</Directory>
-Alias /architect /var/lib/underware/clusters/
-EOF
-systemctl enable httpd
-systemctl start httpd
 
 #
 # Install Tools
