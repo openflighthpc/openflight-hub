@@ -29,7 +29,7 @@
 # Variables
 SOURCE_AMI=ami-0019f18ee3d4157d3 # Clean CentOS 7 build image in Alces account, hosted in eu-west-1
 REGION=eu-west-1
-IMAGE_NAME="openflight-hub-$(date +%Y%m%d%H%M%S)"
+IMAGE_NAME="${IMAGE_NAME:-openflight-hub-$(date +%Y%m%d%H%M%S)}"
 KEY_PATH="/root/.ssh/aws_ireland.pem"
 
 # Launch base CentOS Instance

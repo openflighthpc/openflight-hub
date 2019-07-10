@@ -29,7 +29,7 @@
 # Variables
 SOURCE_IMAGE=/subscriptions/d1e964ef-15c7-4b27-8113-e725167cee83/resourceGroups/openflight-cloud/providers/Microsoft.Compute/images/openflight-cloud-base-1.0-azure # OpenFlight CentOS Clean image (uksouth)
 REGION=uksouth
-IMAGE_NAME="openflight-hub-$(date +%Y%m%d%H%M%S)"
+IMAGE_NAME="${IMAGE_NAME:-openflight-hub-$(date +%Y%m%d%H%M%S)}"
 KEY_PATH="/root/.ssh/aws_ireland.pem"
 PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCK8fxlYAcZHfZ9Rhcl0IIcFAleztyMkBF6CxfcaqI6XO9WYhy/sawZXnOHlACjLfx1RuDu+kDvPT/lhxay7yrQt0g1HsTs3xwW6luZuLxPvCS7Zqi0AGqr/LC6OWUKodpNe8ZUPxCWx+JiyaRb9SD+PWqV0WPiZXTmgd9lRYfWuvMl24sNvK8VWWzWSr8q2+1yGNbyzoFC/NUfoMuFEPyb+XV3BIKNyacAM8gep+mrFxadV1ehZConzeoJSFavlJUiU76JMKkbJcfUeXFqTBk/W1mXpmYPw+JUZzsDM2RZD/Ef4LrhyxjtLVLelrIU5j4DN/7lMCsMf3tdfXbJ2+fp aws_ireland"
 
