@@ -119,6 +119,7 @@ EOF
 
 # First run configuration
 cat << 'EOF' > /etc/profile.d/firstrun.sh
+[ -z "$PS1" ] && return
 if [ "$USER" == "centos" ] ; then
     if [ -f /home/centos/.firstrun ] ; then
         flexec ruby /opt/flight/opt/runway/bin/banner
