@@ -138,19 +138,19 @@ echo "Generating Templates"
 flight architect template
 
 EXPORT=$(flight architect export |sed 's/.*: //g')
+cp /var/lib/underware/clusters/$CLUSTER/var/rendered/kickstart/domain/platform/manifest.yaml /var/lib/underware/clusters/$CLUSTER/var/rendered/
 
 #
 # CLOUD
 #
-flight cloud cluster init $CLUSTER-azure > /dev/null
-flight cloud import $EXPORT > /dev/null
-flight cloud cluster init $CLUSTER-aws > /dev/null
-flight cloud import $EXPORT > /dev/null
+flight cloud cluster init $CLUSTER-azure azure > /dev/null
+flight cloud import /var/lib/underware/clusters/$CLUSTER/var/rendered/manifest.yaml > /dev/null
+flight cloud cluster init $CLUSTER-aws aws > /dev/null
+flight cloud import /var/lib/underware/clusters/$CLUSTER/var/rendered/manifest.yaml > /dev/null
 
 #
 # METAL
 #
-cp /var/lib/underware/clusters/$CLUSTER/var/rendered/kickstart/domain/platform/manifest.yaml /var/lib/underware/clusters/$CLUSTER/var/rendered/
 flight metal import /var/lib/underware/clusters/$CLUSTER/var/rendered/manifest.yaml >> /dev/null
 
 
