@@ -79,8 +79,10 @@ function ask_question_yn() {
 #
 
 # Update domain config
+## AWS IP
 IP="$(curl -f http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)"
 if [ $? != 0 ] ; then
+    ## Azure IP
     IP="$(curl -f -H Metadata:true 'http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2019-06-01&format=text')"
 fi
 sed -i "s,renderedurl:.*,renderedurl: http://$IP/architect/<%=node.config.cluster%>/var/rendered/<%=node.platform%>/node/<%=node.name%>,g" /opt/flight/opt/architect/data/base/etc/configs/domain.yaml
@@ -101,22 +103,7 @@ For information on locating your cloud credentials, see:
 
 EOF
 
-while [[ $AWS != 'y' && $AZURE != 'y' ]] ; do
-
-    # AWS
-    ask_question_yn "Configure AWS Access Credentials" AWS
-
-    if [[ $AWS =~ ^[Yy]$ ]] ; then
-        flight cloud aws configure
-    fi
-
-    # Azure
-    ask_question_yn "Configure Azure Access Credentials" AZURE
-
-    if [[ $AZURE =~ ^[Yy]$ ]] ; then
-        flight cloud azure configure
-    fi
-done
+flight cloud configure
 
 echo
 echo
@@ -155,8 +142,10 @@ EXPORT=$(flight architect export |sed 's/.*: //g')
 #
 # CLOUD
 #
-flight cloud aws import $EXPORT > /dev/null
-flight cloud azure import $EXPORT > /dev/null
+flight cloud cluster init $CLUSTER-azure > /dev/null
+flight cloud import $EXPORT > /dev/null
+flight cloud cluster init $CLUSTER-aws > /dev/null
+flight cloud import $EXPORT > /dev/null
 
 #
 # METAL
@@ -165,35 +154,31 @@ cp /var/lib/underware/clusters/$CLUSTER/var/rendered/kickstart/domain/platform/m
 flight metal import /var/lib/underware/clusters/$CLUSTER/var/rendered/manifest.yaml >> /dev/null
 
 
-if [[ $AWS == 'y' && $AZURE == 'y' ]] ; then
-    PROMPT="[aws/azure]"
-elif [[ $AWS == 'y' ]] ; then
-    PROMPT="aws"
-elif [[ $AZURE == 'y' ]] ; then
-    PROMPT="azure"
-fi
-
 cat << EOF
 
 OpenFlight Hub Configuration Complete!
 
 To deploy your cluster:
 
-1. Deploy the domain
+1. Select AWS or Azure cluster (replace PLATFORM with aws' or 'azure')
 
-    flight cloud $PROMPT deploy $CLUSTER-domain domain
+    flight cloud cluster switch $CLUSTER-PLATFORM
 
-2. Deploy the gateway
+2. Deploy the domain
 
-    flight cloud $PROMPT deploy gateway1 node/gateway1 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
+    flight cloud deploy domain
 
-3. Copy the SSH key to the gateway
+3. Deploy the gateway
+
+    flight cloud deploy gateway1 -p "securitygroup,network1SubnetID=*domain"
+
+4. Copy the SSH key to the gateway
 
     scp /root/.ssh/id_rsa root@GATEWAY-IP:/root/.ssh/
 
-4. Deploy the nodes (example given: node01)
+5. Deploy the nodes (example given: node01)
 
-    flight cloud $PROMPT deploy node01 node/node01 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
+    flight cloud deploy node01 -p "securitygroup,network1SubnetID=*$CLUSTER-domain"
 
 EOF
 
