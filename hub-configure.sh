@@ -160,7 +160,7 @@ OpenFlight Hub Configuration Complete!
 
 To deploy your cluster:
 
-1. Select AWS or Azure cluster (replace PLATFORM with aws' or 'azure')
+1. Select AWS or Azure cluster (replace PLATFORM with 'aws' or 'azure')
 
     flight cloud cluster switch $CLUSTER-PLATFORM
 
