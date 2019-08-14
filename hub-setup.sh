@@ -31,14 +31,14 @@ EOF
 
 # Rendered content
 cat << EOF > /etc/httpd/conf.d/architect.conf
-<Directory /var/lib/underware/clusters/>
+<Directory /var/lib/architect/clusters/>
     Options Indexes MultiViews FollowSymlinks
     AllowOverride None
     Require all granted
     Order Allow,Deny
     Allow from all
 </Directory>
-Alias /architect /var/lib/underware/clusters/
+Alias /architect /var/lib/architect/clusters/
 EOF
 systemctl enable httpd
 systemctl start httpd
