@@ -17,18 +17,6 @@ yum install -y httpd yum-plugin-priorities yum-utils createrepo
 # HTTP Setup
 #
 
-# Repo
-cat << EOF > /etc/httpd/conf.d/repo.conf
-<Directory /opt/repo/>
-    Options Indexes MultiViews FollowSymlinks
-    AllowOverride None
-    Require all granted
-    Order Allow,Deny
-    Allow from all
-</Directory>
-Alias /repo /opt/repo
-EOF
-
 # Rendered content
 cat << EOF > /etc/httpd/conf.d/architect.conf
 <Directory /var/lib/architect/clusters/>
@@ -43,67 +31,14 @@ EOF
 systemctl enable httpd
 systemctl start httpd
 
-#
-# Repo
-#
-
-mkdir -p /opt/repo/openflight
-
-cat << 'EOF' > /opt/repo/mirror.conf
-[main]
-cachedir=/var/cache/yum/$basearch/$releasever
-keepcache=0
-debuglevel=2
-logfile=/var/log/yum.log
-exactarch=1
-obsoletes=1
-gpgcheck=1
-plugins=1
-installonly_limit=5
-reposdir=/dev/null
-
-EOF
-curl https://openflighthpc.s3-eu-west-1.amazonaws.com/repos/openflight/openflight.repo >> /opt/repo/mirror.conf
-
-reposync -nm --config /opt/repo/mirror.conf -r openflight -p /opt/repo/openflight --norepopath
-createrepo /opt/repo/openflight
-
-# Server Updater Script
-cat << 'EOF' > /opt/repo/updateserver.sh
-IP="$(curl -f http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)"
-if [ $? != 0 ] ; then
-    IP="$(curl -f -H Metadata:true 'http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2019-06-01&format=text')"
-fi
-
-# Client repo file
-cat << EOD > /opt/repo/client.repo
-[openflight]
-name=openflight
-baseurl=http://$IP/repo/openflight
-description=OpenFlight Tool Repository
-enabled=1
-gpgcheck=0
-EOD
-
-# Client updater script
-cat << EOD > /opt/repo/updateclient.sh
-curl http://$IP/repo/client.repo > /etc/yum.repos.d/client.repo
-EOD
-
-bash /opt/repo/updateclient.sh
-EOF
-
-bash /opt/repo/updateserver.sh
-
-# Add updater to crontab
-(crontab -l ; echo '@reboot  bash /opt/repo/updateserver.sh') |crontab -
+curl https://openflighthpc.s3-eu-west-1.amazonaws.com/repos/openflight/openflight.repo > /etc/yum.repos.d/openflight.repo
 
 #
 # Install Tools
 #
-bash /opt/repo/updateclient.sh
-yum clean all
+curl https://openflighthpc.s3-eu-west-1.amazonaws.com/repos/openflight/openflight.repo > /etc/yum.repos.d/openflight.repo
 
+yum clean all
 yum install -y flight-architect flight-cloud flight-manage flight-metal flight-inventory
 
 _yes=true /opt/flight/bin/flenable
