@@ -83,7 +83,7 @@ function ask_question_yn() {
 IP="$(curl -f http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)"
 if [ $? != 0 ] ; then
     ## Azure IP
-    IP="$(curl -f -H Metadata:true 'http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2019-06-01&format=text')"
+    IP="$(curl -f -H Metadata:true 'http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2019-06-01&format=text' 2> /dev/null)"
 fi
 sed -i "s,renderedurl:.*,renderedurl: http://$IP/architect/<%=node.config.cluster%>/var/rendered/<%=node.platform%>/node/<%=node.name%>,g" /opt/flight/opt/architect/data/base/etc/configs/domain.yaml
 

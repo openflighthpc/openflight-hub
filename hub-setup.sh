@@ -55,6 +55,7 @@ EOF
 # First run configuration
 cat << 'EOF' > /etc/profile.d/firstrun.sh
 [ -z "$PS1" ] && return
+if [ "$USER" != "root" ] ; then
     # Check user can passwordless sudo
     if timeout 2 sudo -n id >> /dev/null 2>&1; then
         if [ -f /opt/flight/.firstrun ] ; then
