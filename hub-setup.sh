@@ -8,6 +8,10 @@
 sed -i 's/^SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 setenforce 0
 
+# Firewall
+systemctl stop firewalld
+systemctl disable firewalld
+
 # Packages
 yum install -y vim git epel-release wget
 yum install -y s3cmd awscli
