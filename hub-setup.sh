@@ -69,7 +69,7 @@ fi
 EOF
 touch /opt/flight/.firstrun
 
-curl https://raw.githubusercontent.com/openflighthpc/openflight-hub/master/hub-configure.sh > /root/hub-configure.sh
+curl https://raw.githubusercontent.com/openflighthpc/openflight-hub/support/chroot-imagebuild/hub-configure.sh > /root/hub-configure.sh
 
 #####################################################
 #                                                   #
