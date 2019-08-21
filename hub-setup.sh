@@ -55,17 +55,19 @@ EOF
 # First run configuration
 cat << 'EOF' > /etc/profile.d/firstrun.sh
 [ -z "$PS1" ] && return
-if [ "$USER" == "centos" ] ; then
-    if [ -f /home/centos/.firstrun ] ; then
-        flexec ruby /opt/flight/opt/runway/bin/banner
-        sudo bash -l /root/hub-configure.sh
-    else
-        flight help
+    # Check user can passwordless sudo
+    if timeout 2 sudo -n id >> /dev/null 2>&1; then
+        if [ -f /opt/flight/.firstrun ] ; then
+            flexec ruby /opt/flight/opt/runway/bin/banner
+            sudo bash -l /root/hub-configure.sh
+        else
+            flight help
+        fi
+        sudo su -
     fi
-    sudo su -
 fi
 EOF
-touch /home/centos/.firstrun
+touch /opt/flight/.firstrun
 
 curl https://raw.githubusercontent.com/openflighthpc/openflight-hub/master/hub-configure.sh > /root/hub-configure.sh
 

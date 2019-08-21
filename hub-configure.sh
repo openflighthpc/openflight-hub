@@ -182,5 +182,5 @@ To deploy your cluster:
 
 EOF
 
-rm -f /home/centos/.firstrun
+rm -f /opt/flight/.firstrun
 
