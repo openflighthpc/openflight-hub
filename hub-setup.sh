@@ -35,8 +35,6 @@ EOF
 systemctl enable httpd
 systemctl start httpd
 
-curl https://openflighthpc.s3-eu-west-1.amazonaws.com/repos/openflight/openflight.repo > /etc/yum.repos.d/openflight.repo
-
 #
 # Install Tools
 #
